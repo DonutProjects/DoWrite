@@ -12,14 +12,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: x86_64-glibc
-            zig_target: x86_64-linux-gnu
-          - name: x86_64-musl
+          - name: x86_64
             zig_target: x86_64-linux-musl
-          - name: aarch64-glibc
-            zig_target: aarch64-linux-gnu
-          - name: aarch64-musl
+          - name: aarch64
             zig_target: aarch64-linux-musl
+          - name: riscv64
+            zig_target: riscv64-linux-musl
+          - name: x86
+            zig_target: x86-linux-musl
+          - name: armv7
+            zig_target: arm-linux-musleabihf
+          - name: riscv32
+            zig_target: riscv32-linux-musl
 
     steps:
       - name: Checkout
@@ -28,11 +32,10 @@ jobs:
       - name: Set up Zig
         uses: mlugg/setup-zig@v2
         with:
-          version: 0.14.1
+          version: latest
 
       - name: Build binary
         run: |
-          make clean
           make \
             CC="zig cc -target ${{ matrix.zig_target }}" \
             CFLAGS="-O3 -Wall -Wextra -Wpedantic" \
@@ -41,7 +44,6 @@ jobs:
 
       - name: Inspect binary
         run: |
-          file "dowrite-${{ matrix.name }}"
           mkdir -p dist
           mv "dowrite-${{ matrix.name }}" dist/
 
